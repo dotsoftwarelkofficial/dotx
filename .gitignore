@@ -19,6 +19,8 @@ Cargo.lock
 *.pdb
 *.msi
 *.exe
+!apps/website/public/downloads/*.msi
+!apps/website/public/downloads/*.exe
 
 # Env
 .env
