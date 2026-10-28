@@ -1,10 +1,11 @@
 {
-  "name": "DOTX \u2014 Premium Windows Browser",
+  "name": "DOTX — Premium Windows Browser",
   "short_name": "DOTX",
   "description": "Fast. Private. Designed for Windows 10/11.",
-  "start_url": "./",
+  "start_url": "/dotx/",
+  "scope": "/dotx/",
   "display": "standalone",
-  "background_color": "#080A12",
-  "theme_color": "#7C5CFF",
-  "icons": [{ "src": "./favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+  "background_color": "#08090D",
+  "theme_color": "#08090D",
+  "icons": [{ "src": "/dotx/favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
 }
