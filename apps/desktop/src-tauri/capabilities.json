@@ -1,6 +1,13 @@
 {
   "identifier": "main-capability",
-  "description": "Least-privilege for DOTX main window",
+  "description": "Least-privilege for DOTX privileged window. No FS/shell exposed to web content.",
   "windows": ["main"],
-  "permissions": ["core:default", "core:window:allow-minimize", "core:window:allow-maximize", "core:window:allow-close"]
+  "permissions": [
+    "core:default",
+    "core:window:allow-close",
+    "core:window:allow-minimize",
+    "core:window:allow-maximize",
+    "core:window:allow-start-dragging",
+    "core:window:allow-toggle-maximize"
+  ]
 }

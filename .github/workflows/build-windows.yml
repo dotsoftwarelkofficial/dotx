@@ -1,0 +1,102 @@
+name: Build Windows (DOTX Desktop)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/desktop/**"
+      - "packages/shared/**"
+      - ".github/workflows/build-windows.yml"
+      - ".github/workflows/release-windows.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/desktop/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: |
+            package.json
+            apps/desktop/package.json
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: apps/desktop/src-tauri -> target
+
+      - name: Install dependencies (npm ci)
+        run: npm ci
+
+      - name: Typecheck desktop
+        run: npm run typecheck --workspace=apps/desktop
+
+      - name: Build desktop frontend (Vite)
+        run: npm run build --workspace=apps/desktop
+
+      - name: Cargo test (Rust unit tests)
+        working-directory: apps/desktop/src-tauri
+        run: cargo test --verbose
+        # On Windows, this will run the 8 tests we added (validate_url etc.)
+
+      - name: Verify Tauri config and icons
+        shell: pwsh
+        run: |
+          Test-Path apps/desktop/src-tauri/icons/icon.png -PathType Leaf
+          Test-Path apps/desktop/src-tauri/tauri.conf.json
+          cat apps/desktop/src-tauri/tauri.conf.json | Select-String "DOTX"
+
+      - name: Build Tauri Windows installers
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: apps/desktop
+          args: --verbose
+
+      - name: List bundles
+        shell: pwsh
+        run: |
+          Get-ChildItem -Recurse apps/desktop/src-tauri/target/release/bundle | Format-List
+          Get-ChildItem apps/desktop/src-tauri/target/release/bundle -Recurse -Include *.msi,*.exe | ForEach-Object { Write-Host "Found: $($_.FullName) - $($_.Length) bytes" }
+
+      - name: Generate SHA-256 checksums
+        shell: pwsh
+        run: |
+          $artifacts = Get-ChildItem -Recurse -Include *.msi,*.exe -Path apps/desktop/src-tauri/target/release/bundle
+          if (-not $artifacts) { Write-Host "No MSI/EXE found - build may have failed"; exit 1 }
+          $artifacts | ForEach-Object {
+            $h = (Get-FileHash $_.FullName -Algorithm SHA256).Hash
+            "$h  $($_.Name)" | Out-File -Append checksums-SHA256.txt
+            Write-Host "$h  $($_.Name)"
+          }
+          cat checksums-SHA256.txt
+          ls -lh checksums-SHA256.txt
+
+      - name: Upload installer artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotx-windows-installers
+          path: |
+            apps/desktop/src-tauri/target/release/bundle/**/*.msi
+            apps/desktop/src-tauri/target/release/bundle/**/*.exe
+            checksums-SHA256.txt
+          if-no-files-found: error
+          retention-days: 14
