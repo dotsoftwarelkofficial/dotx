@@ -1,6 +1,6 @@
 {
   "identifier": "main-capability",
-  "description": "Least-privilege for DOTX privileged window. No FS/shell exposed to web content.",
+  "description": "DOTX privileged main window + isolated tab webviews. Least-privilege: no FS/shell/db exposure to web content. Downloads gated via Rust validate + OS dialog only.",
   "windows": ["main"],
   "permissions": [
     "core:default",
@@ -8,6 +8,29 @@
     "core:window:allow-minimize",
     "core:window:allow-maximize",
     "core:window:allow-start-dragging",
-    "core:window:allow-toggle-maximize"
+    "core:window:allow-toggle-maximize",
+    "core:window:allow-set-size",
+    "core:window:allow-set-position",
+    "core:window:allow-inner-size",
+    "core:window:allow-inner-position",
+    "core:window:allow-scale-factor",
+    "core:webview:allow-create-webview",
+    "core:webview:allow-create-webview-window",
+    "core:webview:allow-get-all-webviews",
+    "core:webview:allow-webview-position",
+    "core:webview:allow-webview-size",
+    "core:webview:allow-webview-hide",
+    "core:webview:allow-webview-show",
+    "core:webview:allow-webview-close",
+    "core:webview:allow-set-webview-position",
+    "core:webview:allow-set-webview-size",
+    "core:webview:allow-set-webview-focus",
+    "core:webview:allow-set-webview-zoom",
+    "core:webview:allow-print",
+    "core:event:allow-emit",
+    "core:event:allow-listen",
+    "dialog:default",
+    "dialog:allow-open",
+    "dialog:allow-save"
   ]
 }

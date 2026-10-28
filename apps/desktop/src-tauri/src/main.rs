@@ -1,6 +1,5 @@
-// DOTX Desktop — Tauri 2 + Rust backend
-// Security: privileged UI is isolated from untrusted web content.
-// This module implements narrow, validated IPC only.
+// DOTX Desktop — Tauri 2 + Rust backend (v0.2.0 Real Browser)
+// Security: privileged UI isolated, webviews are unprivileged, IPC narrow.
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
@@ -23,37 +22,30 @@ fn validate_url(input: String) -> ValidateResult {
         return ValidateResult { ok: false, normalized: None, reason: Some("empty input".into()) };
     }
     let lower = trimmed.to_lowercase();
-    // Block dangerous schemes explicitly (xss, file exfil, js execution)
     for blocked in ["javascript:", "data:", "file:", "vbscript:", "blob:"] {
         if lower.starts_with(blocked) {
             return ValidateResult { ok: false, normalized: None, reason: Some(format!("blocked scheme: {}", blocked.trim_end_matches(':'))) };
         }
     }
-    // Detect external protocols that need confirmation (mailto, etc.)
     if lower.starts_with("mailto:") || lower.starts_with("tel:") || lower.starts_with("ms-") {
         return ValidateResult { ok: false, normalized: None, reason: Some("external protocol requires confirmation".into()) };
     }
-    // Heuristic: if no scheme, treat as search or https
     let has_scheme = trimmed.contains("://") || trimmed.contains(':');
-    // If contains spaces and no scheme, it's likely a search query → not a URL
     if !has_scheme && trimmed.contains(' ') {
         return ValidateResult { ok: false, normalized: None, reason: Some("search query, not URL".into()) };
     }
     let candidate = if trimmed.contains("://") {
         trimmed.to_string()
     } else if has_scheme {
-        // Has colon but no // → might be custom protocol, block unless http/https
         return ValidateResult { ok: false, normalized: None, reason: Some("unsupported protocol".into()) };
     } else {
         format!("https://{}", trimmed)
     };
     match Url::parse(&candidate) {
         Ok(u) if matches!(u.scheme(), "http" | "https") => {
-            // Validate host exists
             if u.host_str().is_none() || u.host_str().unwrap().is_empty() {
                 return ValidateResult { ok: false, normalized: None, reason: Some("missing host".into()) };
             }
-            // Reject localhost/private IP in privileged context? Allow but warn (future: block by setting)
             ValidateResult { ok: true, normalized: Some(u.to_string()), reason: None }
         },
         Ok(u) => ValidateResult { ok: false, normalized: None, reason: Some(format!("unsupported scheme: {}", u.scheme())) },
@@ -71,26 +63,21 @@ pub struct PathValidateResult {
 
 #[tauri::command]
 fn validate_download_path(file_name: String, download_dir: String) -> PathValidateResult {
-    // Prevent path traversal: file_name must not contain path separators or ..
     if file_name.contains('/') || file_name.contains('\\') || file_name.contains("..") {
         return PathValidateResult { ok: false, sanitized: None, reason: Some("path traversal detected in file name".into()) };
     }
-    // File name should be reasonable length and not empty
     let trimmed = file_name.trim();
     if trimmed.is_empty() || trimmed.len() > 255 {
         return PathValidateResult { ok: false, sanitized: None, reason: Some("invalid file name length".into()) };
     }
-    // Download dir must be absolute and exist (or parent exists) — basic check
     let dir = Path::new(&download_dir);
     if !dir.is_absolute() {
         return PathValidateResult { ok: false, sanitized: None, reason: Some("download directory must be absolute".into()) };
     }
-    // Sanitize: remove control chars
     let sanitized = trimmed.chars().filter(|c| !c.is_control()).collect::<String>();
     if sanitized != trimmed {
         return PathValidateResult { ok: false, sanitized: Some(sanitized), reason: Some("control characters removed".into()) };
     }
-    // Construct full path and ensure it stays within download_dir (no traversal)
     let full = dir.join(&sanitized);
     if !full.starts_with(dir) {
         return PathValidateResult { ok: false, sanitized: None, reason: Some("path escapes download directory".into()) };
@@ -98,7 +85,32 @@ fn validate_download_path(file_name: String, download_dir: String) -> PathValida
     PathValidateResult { ok: true, sanitized: Some(full.to_string_lossy().to_string()), reason: None }
 }
 
-// ── Bookmark types (for future persistence) ─────────────────────────────────
+// ── Tab lifecycle validation (for tests) ────────────────────────────────────
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct TabMeta {
+    pub id: String,
+    pub url: String,
+    pub title: String,
+}
+
+#[tauri::command]
+fn validate_tab_create(url: String) -> ValidateResult {
+    if url == "dotx://newtab" {
+        return ValidateResult { ok: true, normalized: Some(url), reason: None };
+    }
+    validate_url(url)
+}
+
+#[tauri::command]
+fn validate_tab_switch(tabs: Vec<TabMeta>, target_id: String) -> ValidateResult {
+    if tabs.iter().any(|t| t.id == target_id) {
+        ValidateResult { ok: true, normalized: Some(target_id), reason: None }
+    } else {
+        ValidateResult { ok: false, normalized: None, reason: Some(format!("tab {} not found", target_id)) }
+    }
+}
+
+// ── Bookmark ────────────────────────────────────────────────────────────────
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Bookmark {
     pub id: String,
@@ -116,11 +128,11 @@ fn validate_bookmark(title: String, url: String) -> ValidateResult {
     validate_url(url)
 }
 
-// ── Settings validation ─────────────────────────────────────────────────────
+// ── Settings ────────────────────────────────────────────────────────────────
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Settings {
-    pub theme: String, // dark | light | system
-    pub search_provider: String, // duckduckgo | google | bing | brave
+    pub theme: String,
+    pub search_provider: String,
     pub homepage: String,
     pub download_dir: Option<String>,
 }
@@ -160,14 +172,38 @@ fn get_platform() -> String {
     std::env::consts::OS.to_string()
 }
 
+// ── Download helpers ────────────────────────────────────────────────────────
+#[derive(Serialize, Deserialize, Debug)]
+pub struct DownloadValidate {
+    pub url: String,
+    pub filename: String,
+}
+
+#[tauri::command]
+fn validate_download_request(url: String, filename: String) -> ValidateResult {
+    let u = validate_url(url.clone());
+    if !u.ok {
+        return u;
+    }
+    let p = validate_download_path(filename.clone(), "/tmp".into());
+    if !p.ok {
+        return ValidateResult { ok: false, normalized: None, reason: p.reason };
+    }
+    ValidateResult { ok: true, normalized: Some(format!("{} -> {}", url, filename)), reason: None }
+}
+
 // ── Main ────────────────────────────────────────────────────────────────────
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
             validate_url,
             validate_download_path,
             validate_bookmark,
             validate_settings,
+            validate_tab_create,
+            validate_tab_switch,
+            validate_download_request,
             app_version,
             get_platform
         ])
@@ -219,12 +255,66 @@ mod tests {
     }
 
     #[test]
+    fn test_validate_url_https_required() {
+        assert!(validate_url("https://rust-lang.org".into()).ok);
+        assert!(validate_url("http://example.com".into()).ok);
+        assert!(!validate_url("ftp://example.com".into()).ok);
+    }
+
+    // ── Tab lifecycle ─────────────────────────────────────────────────────
+    #[test]
+    fn test_tab_create_newtab() {
+        assert!(validate_tab_create("dotx://newtab".into()).ok);
+        assert!(validate_tab_create("https://example.com".into()).ok);
+        assert!(!validate_tab_create("javascript:alert(1)".into()).ok);
+        assert!(!validate_tab_create("".into()).ok);
+    }
+
+    #[test]
+    fn test_tab_switch_valid() {
+        let tabs = vec![
+            TabMeta { id: "a".into(), url: "https://a.com".into(), title: "A".into() },
+            TabMeta { id: "b".into(), url: "https://b.com".into(), title: "B".into() },
+        ];
+        assert!(validate_tab_switch(tabs.clone(), "a".into()).ok);
+        assert!(validate_tab_switch(tabs.clone(), "b".into()).ok);
+        assert!(!validate_tab_switch(tabs, "missing".into()).ok);
+    }
+
+    #[test]
+    fn test_tab_switch_empty() {
+        let tabs: Vec<TabMeta> = vec![];
+        assert!(!validate_tab_switch(tabs, "a".into()).ok);
+    }
+
+    // ── Downloads ──────────────────────────────────────────────────────────
+    #[test]
+    fn test_validate_download_request_ok() {
+        let r = validate_download_request("https://example.com/file.pdf".into(), "file.pdf".into());
+        assert!(r.ok);
+    }
+
+    #[test]
+    fn test_validate_download_request_blocked_url() {
+        let r = validate_download_request("javascript:alert(1)".into(), "file.pdf".into());
+        assert!(!r.ok);
+    }
+
+    #[test]
+    fn test_validate_download_request_bad_filename() {
+        let r = validate_download_request("https://example.com/a.pdf".into(), "../evil.exe".into());
+        assert!(!r.ok);
+        assert!(r.reason.unwrap().contains("traversal") || r.reason.unwrap().contains("path"));
+        let r2 = validate_download_request("https://example.com/a.pdf".into(), "".into());
+        assert!(!r2.ok);
+    }
+
+    #[test]
     fn test_validate_download_path_ok() {
         let r = validate_download_path("report.pdf".into(), "C:\\Users\\Test\\Downloads".into());
         if cfg!(windows) {
             assert!(r.ok);
         } else {
-            // On linux runner, absolute check for C:\ will fail — test unix path
             let r2 = validate_download_path("report.pdf".into(), "/tmp/downloads".into());
             assert!(r2.ok);
         }
