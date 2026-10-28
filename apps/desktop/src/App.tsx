@@ -225,26 +225,26 @@ export function App() {
   const canForward = (activeTab?.historyIndex ?? 0) < (activeTab?.history.length ?? 1) - 1;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: "#080A12", color: "#EDEEF5", fontFamily: "Inter, system-ui, sans-serif", fontSize: 13 }}>
-      {/* Custom titlebar */}
-      <div data-tauri-drag-region style={{ height: 36, display: "flex", alignItems: "center", padding: "0 10px", background: "#11131F", borderBottom: "1px solid rgba(255,255,255,0.08)", userSelect: "none" }}>
-        <span style={{ width: 24, height: 24, borderRadius: 8, background: "linear-gradient(135deg,#7C5CFF,#2EE6E6)", display: "grid", placeItems: "center", fontWeight: 800, fontSize: 11 }}>◈</span>
-        <b style={{ marginLeft: 8, fontSize: 12, letterSpacing: 0.2 }}>DOTX</b>
-        <span style={{ marginLeft: 8, fontSize: 10, color: "#9AA0B8", letterSpacing: 0.6, textTransform: "uppercase" }}>v0.1.0 Preview</span>
-        <span style={{ marginLeft: "auto", display: "flex", gap: 6, fontSize: 11, opacity: 0.7 }}>— □ ×</span>
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: "var(--bg)", color: "var(--text-primary)", fontFamily: "Inter, system-ui, sans-serif", fontSize: 13 }}>
+      {/* Custom titlebar — premium blurred */}
+      <div data-tauri-drag-region className="titlebar">
+        <span className="titlebar-mark">◈</span>
+        <b style={{ marginLeft: 8, fontSize: 12, letterSpacing: -0.01 }}>DOTX</b>
+        <span style={{ marginLeft: 8, fontSize: 10, color: "var(--text-tertiary)", letterSpacing: 0.06, textTransform: "uppercase", fontWeight: 600 }}>Preview • v0.1.0</span>
+        <span style={{ marginLeft: "auto", display: "flex", gap: 8, fontSize: 11, color: "var(--text-tertiary)" }}>— □ ×</span>
       </div>
 
-      {/* Tab bar */}
-      <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 8px", background: "#0F1220", borderBottom: "1px solid rgba(255,255,255,0.08)", overflowX: "auto" }}>
+      {/* Tab bar — premium */}
+      <div className="tabbar">
         {tabs.map(t => (
-          <div key={t.id} onClick={() => setActiveId(t.id)} draggable onDragOver={e => e.preventDefault()} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 10px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.08)", background: activeId === t.id ? "#1A1E33" : "transparent", color: activeId === t.id ? "#EDEEF5" : "#9AA0B8", cursor: "pointer", minWidth: 140, maxWidth: 220 }}>
-            <span style={{ width: 14, height: 14, borderRadius: 4, background: t.url.startsWith("dotx://") ? "#1A1E33" : "#7C5CFF", display: "grid", placeItems: "center", fontSize: 8, color: "white" }}>{t.isLoading ? "◐" : "◈"}</span>
-            <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: 600, fontSize: 12 }}>{t.title}</span>
+          <div key={t.id} onClick={() => setActiveId(t.id)} draggable onDragOver={e => e.preventDefault()} className="tab" style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 12px", borderRadius: 10, border: "1px solid var(--border)", background: activeId === t.id ? "var(--bg-card)" : "transparent", color: activeId === t.id ? "var(--text-primary)" : "var(--text-secondary)", cursor: "pointer", minWidth: 150, maxWidth: 220, boxShadow: activeId === t.id ? "0 1px 3px rgba(0,0,0,0.3)" : "none" }}>
+            <span style={{ width: 16, height: 16, borderRadius: 5, background: t.url.startsWith("dotx://") ? "var(--bg-elevated)" : "linear-gradient(135deg,var(--violet),#3B82F6)", display: "grid", placeItems: "center", fontSize: 8, color: "white", border: "1px solid var(--border)" }}>{t.isLoading ? "◐" : "◈"}</span>
+            <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: 600, fontSize: 12, letterSpacing: -0.01 }}>{t.title}</span>
             <button onClick={e => { e.stopPropagation(); duplicateTab(t.id); }} title="Duplicate" style={iconBtn}>⧉</button>
             <button onClick={e => { e.stopPropagation(); closeTab(t.id); }} title="Close" style={iconBtn}>×</button>
           </div>
         ))}
-        <button onClick={newTab} title="New Tab (Ctrl+T)" style={{ ...iconBtn, width: 28, height: 28, borderRadius: 8, background: "#11131F", border: "1px solid rgba(255,255,255,0.08)" }}>＋</button>
+        <button onClick={newTab} title="New Tab (Ctrl+T)" style={{ ...iconBtn, width: 30, height: 30, borderRadius: 10, background: "var(--bg-card)", border: "1px solid var(--border)" }}>＋</button>
         <span style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
           <button onClick={() => setPanel(panel === "bookmarks" ? null : "bookmarks")} style={pillBtn(panel === "bookmarks")}>☆ Bookmarks</button>
           <button onClick={() => setPanel(panel === "history" ? null : "history")} style={pillBtn(panel === "history")}>◷ History</button>
@@ -253,17 +253,17 @@ export function App() {
         </span>
       </div>
 
-      {/* Toolbar */}
-      <div style={{ display: "flex", gap: 6, padding: "8px 10px", background: "#080A12", borderBottom: "1px solid rgba(255,255,255,0.08)", alignItems: "center" }}>
+      {/* Toolbar — premium */}
+      <div className="toolbar">
         <button disabled={!canBack} onClick={goBack} title="Back (Alt+←)" style={toolBtn(!canBack)}>←</button>
         <button disabled={!canForward} onClick={goForward} title="Forward (Alt+→)" style={toolBtn(!canForward)}>→</button>
         <button onClick={reloadTab} title="Reload (F5)" style={toolBtn(false)}>↻</button>
         <button onClick={() => navigate("dotx://newtab")} title="Home" style={toolBtn(false)}>⌂</button>
-        <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 8, background: "#11131F", border: `1px solid ${navError ? "#FF5A52" : "rgba(255,255,255,0.08)"}`, borderRadius: 12, padding: "7px 10px" }}>
-          <span style={{ color: "#6B7280", fontSize: 12 }}>{activeTab?.url.startsWith("https") ? "🔒" : activeTab?.url.startsWith("dotx://") ? "◈" : "⚠"}</span>
-          <input ref={inputRef} value={addressInput} onChange={e => setAddressInput(e.target.value)} onKeyDown={e => { if (e.key === "Enter") navigate(addressInput); }} placeholder="Search or enter address (Ctrl+K)" style={{ flex: 1, background: "transparent", border: 0, outline: 0, color: "#EDEEF5", fontSize: 13 }} />
-          {navError && <span title={navError} style={{ color: "#FF5A52", fontSize: 11, maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{navError}</span>}
-          <span style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 10, background: "#161A2B", border: "1px solid rgba(255,255,255,0.08)", padding: "2px 6px", borderRadius: 6, color: "#9AA0B8" }}>Ctrl+K</span>
+        <div className="address-wrap" style={{ borderColor: navError ? "#FF5A52" : undefined }}>
+          <span style={{ color: "var(--text-tertiary)", fontSize: 12 }}>{activeTab?.url.startsWith("https") ? "🔒" : activeTab?.url.startsWith("dotx://") ? "◈" : "⚠"}</span>
+          <input ref={inputRef} value={addressInput} onChange={e => setAddressInput(e.target.value)} onKeyDown={e => { if (e.key === "Enter") navigate(addressInput); }} placeholder="Search or enter address — Ctrl+K for palette" style={{ flex: 1, background: "transparent", border: 0, outline: 0, color: "var(--text-primary)", fontSize: 13 }} />
+          {navError && <span title={navError} style={{ color: "#FF5A52", fontSize: 11, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{navError}</span>}
+          <kbd>⌘K</kbd>
         </div>
         <button onClick={addBookmark} title="Bookmark this tab" style={toolBtn(false)}>☆</button>
         <button onClick={mockDownload} title="Test download validation" style={toolBtn(false)}>⬇</button>
@@ -463,27 +463,27 @@ export function App() {
         )}
       </div>
 
-      {/* Bookmarks folder export hint */}
-      <div style={{ padding: "6px 10px", background: "#0F1220", borderTop: "1px solid rgba(255,255,255,0.08)", display: "flex", gap: 8, fontSize: 11, color: "#6B7280" }}>
+      {/* Status bar — premium */}
+      <div style={{ padding: "7px 12px", background: "var(--bg-elevated)", borderTop: "1px solid var(--border)", display: "flex", gap: 10, fontSize: 11, color: "var(--text-tertiary)" }}>
         <span>WebView2: {(navigator as any).userAgent?.includes("Edg") ? "Evergreen" : "Runtime check on Windows"} · </span>
         <span>Tabs: {tabs.length} · Bookmarks: {bookmarks.length} · History: {history.length}</span>
-        <span style={{ marginLeft: "auto" }}>Secure contexts only — <span style={{ color: "#2EE6E6" }}>no privileged IPC exposed to pages</span></span>
+        <span style={{ marginLeft: "auto" }}>Secure contexts only — <span style={{ color: "var(--violet)" }}>no privileged IPC exposed to pages</span></span>
       </div>
     </div>
   );
 }
 
-// ── styles ──────────────────────────────────────────────────────────────────
-const iconBtn: React.CSSProperties = { width: 22, height: 22, borderRadius: 6, border: "1px solid transparent", background: "transparent", color: "#9AA0B8", cursor: "pointer", display: "grid", placeItems: "center", fontSize: 12 };
-const pillBtn = (active?: boolean): React.CSSProperties => ({ padding: "6px 10px", borderRadius: 999, border: "1px solid rgba(255,255,255,0.08)", background: active ? "#1A1E33" : "#11131F", color: active ? "#EDEEF5" : "#9AA0B8", cursor: "pointer", fontSize: 12, fontWeight: 600 });
-const toolBtn = (disabled?: boolean): React.CSSProperties => ({ width: 30, height: 30, borderRadius: 8, border: "1px solid rgba(255,255,255,0.08)", background: disabled ? "#0F1220" : "#11131F", color: disabled ? "#6B7280" : "#EDEEF5", cursor: disabled ? "not-allowed" : "pointer", opacity: disabled ? 0.5 : 1 });
-const primaryBtn: React.CSSProperties = { padding: "8px 12px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.08)", background: "#7C5CFF", color: "white", fontWeight: 700, cursor: "pointer" };
-const ghostBtn: React.CSSProperties = { padding: "8px 12px", borderRadius: 10, border: "1px solid rgba(255,255,255,0.08)", background: "transparent", color: "#EDEEF5", cursor: "pointer" };
-const inputStyle: React.CSSProperties = { width: "100%", padding: "8px 10px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.08)", background: "#080A12", color: "#EDEEF5", outline: 0 };
-const labelStyle: React.CSSProperties = { display: "grid", gap: 4, fontSize: 12, fontWeight: 600 };
-const rowStyle: React.CSSProperties = { display: "flex", gap: 8, alignItems: "center", padding: 8, borderRadius: 10, border: "1px solid rgba(255,255,255,0.08)", background: "#080A12" };
-const emptyStyle: React.CSSProperties = { padding: 12, borderRadius: 10, border: "1px dashed rgba(255,255,255,0.08)", color: "#9AA0B8", textAlign: "center", fontSize: 12 };
-const cardStyle: React.CSSProperties = { background: "#0F1220", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: 12 };
-const h3: React.CSSProperties = { margin: "0 0 6px", fontSize: 13 };
-const p: React.CSSProperties = { margin: 0, color: "#9AA0B8", fontSize: 12, lineHeight: 1.6 };
-const kbdStyle: React.CSSProperties = { marginTop: 8, fontFamily: "JetBrains Mono, monospace", fontSize: 10, background: "#080A12", border: "1px solid rgba(255,255,255,0.08)", padding: "4px 6px", borderRadius: 6, color: "#6B7280" };
+// ── premium styles (match website tokens) ──────────────────────────────────
+const iconBtn: React.CSSProperties = { width: 22, height: 22, borderRadius: 7, border: "1px solid transparent", background: "transparent", color: "var(--text-secondary)", cursor: "pointer", display: "grid", placeItems: "center", fontSize: 12 };
+const pillBtn = (active?: boolean): React.CSSProperties => ({ padding: "6px 12px", borderRadius: 999, border: "1px solid var(--border)", background: active ? "var(--bg-card)" : "transparent", color: active ? "var(--text-primary)" : "var(--text-secondary)", cursor: "pointer", fontSize: 12, fontWeight: 600, transition: "all 0.15s" });
+const toolBtn = (disabled?: boolean): React.CSSProperties => ({ width: 32, height: 32, borderRadius: 10, border: "1px solid var(--border)", background: disabled ? "var(--bg-elevated)" : "var(--bg-card)", color: disabled ? "var(--text-tertiary)" : "var(--text-primary)", cursor: disabled ? "not-allowed" : "pointer", opacity: disabled ? 0.45 : 1 });
+const primaryBtn: React.CSSProperties = { padding: "9px 14px", borderRadius: 10, border: "1px solid var(--violet)", background: "var(--violet)", color: "white", fontWeight: 650, cursor: "pointer", boxShadow: "0 1px 3px rgba(109,93,247,0.3)" };
+const ghostBtn: React.CSSProperties = { padding: "8px 12px", borderRadius: 10, border: "1px solid var(--border)", background: "var(--bg-card)", color: "var(--text-primary)", cursor: "pointer" };
+const inputStyle: React.CSSProperties = { width: "100%", padding: "9px 11px", borderRadius: 10, border: "1px solid var(--border)", background: "var(--bg-elevated)", color: "var(--text-primary)", outline: 0 };
+const labelStyle: React.CSSProperties = { display: "grid", gap: 6, fontSize: 12, fontWeight: 600, color: "var(--text-secondary)" };
+const rowStyle: React.CSSProperties = { display: "flex", gap: 10, alignItems: "center", padding: 10, borderRadius: 12, border: "1px solid var(--border)", background: "var(--bg-card)" };
+const emptyStyle: React.CSSProperties = { padding: 14, borderRadius: 12, border: "1px dashed var(--border)", color: "var(--text-tertiary)", textAlign: "center", fontSize: 12, background: "var(--bg-elevated)" };
+const cardStyle: React.CSSProperties = { background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 16, padding: 14 };
+const h3: React.CSSProperties = { margin: "0 0 6px", fontSize: 13, fontWeight: 700, letterSpacing: -0.01, color: "var(--text-primary)" };
+const p: React.CSSProperties = { margin: 0, color: "var(--text-secondary)", fontSize: 12, lineHeight: 1.6 };
+const kbdStyle: React.CSSProperties = { marginTop: 10, fontFamily: "JetBrains Mono, monospace", fontSize: 10, background: "var(--bg-elevated)", border: "1px solid var(--border)", padding: "5px 8px", borderRadius: 7, color: "var(--text-tertiary)" };
