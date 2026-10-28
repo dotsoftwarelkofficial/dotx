@@ -41,13 +41,14 @@ export function Download() {
   const hasRelease = !!release && release.assets.length > 0;
   const releaseBase = owner ? `https://github.com/${owner}/${repoName}/releases` : `https://github.com/${repoName}`;
 
-  // Direct web downloads — hosted on GitHub Pages static (no external navigation)
-  const msiUrl = `${base}downloads/DOTX_0.1.0_x64_en-US.msi`;
-  const exeUrl = `${base}downloads/DOTX_0.1.0_x64-setup.exe`;
+  // Direct web downloads — v0.2.0 is latest, v0.1.0 still hosted
+  const msi020Url = `${base}downloads/DOTX_0.2.0_x64_en-US.msi`;
+  const exe020Url = `${base}downloads/DOTX_0.2.0_x64-setup.exe`;
+  const msi010Url = `${base}downloads/DOTX_0.1.0_x64_en-US.msi`;
+  const exe010Url = `${base}downloads/DOTX_0.1.0_x64-setup.exe`;
   const checksumsUrl = `${base}downloads/checksums-SHA256.txt`;
 
   const handleDirectDownload = (url: string, filename: string) => {
-    // Trigger download directly from web (same-origin) — stays on site, no redirect
     const a = document.createElement('a');
     a.href = url;
     a.download = filename;
@@ -73,27 +74,29 @@ export function Download() {
             <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16, padding: 24 }}>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                 <span style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', padding: '6px 12px', borderRadius: 999, fontSize: 12, fontWeight: 600 }}>Windows 10 / 11 • x64</span>
-                <span style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>WebView2 Runtime required • MSI 2.8 MB • EXE 1.9 MB</span>
+                <span style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>WebView2 Runtime required • MSI 3.0 MB • EXE 2.0 MB</span>
+                <span style={{ marginLeft: 'auto', fontSize: 11, background: 'var(--violet-soft)', color: 'var(--violet)', padding: '4px 10px', borderRadius: 999, border: '1px solid var(--violet-border)', fontWeight: 700 }}>v0.2.0 • Latest</span>
               </div>
 
-              {/* Direct web downloads — PRIMARY */}
+              {/* Direct web downloads — PRIMARY v0.2.0 */}
               <div style={{ marginTop: 16, background: 'linear-gradient(135deg, rgba(109,93,247,0.08), transparent)', border: '1px solid var(--violet-border)', borderRadius: 12, padding: 16 }}>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 4 }}>
                   <span style={{ width: 8, height: 8, borderRadius: 999, background: '#10B981', boxShadow: '0 0 8px rgba(16,185,129,0.6)' }} />
-                  <strong style={{ fontSize: 13 }}>Download directly from dotx.app</strong>
+                  <strong style={{ fontSize: 13 }}>Download v0.2.0 directly from dotx.app</strong>
                   <span style={{ marginLeft: 'auto', fontSize: 11, background: 'var(--violet-soft)', color: 'var(--violet)', padding: '3px 8px', borderRadius: 999, border: '1px solid var(--violet-border)', fontWeight: 600 }}>ONE CLICK</span>
                 </div>
-                <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: '4px 0 0' }}>Files are on this website — clicking starts download immediately, no new tab.</p>
+                <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: '4px 0 0' }}>Real WebView2 per-tab browser — isolated surfaces, real https navigation, Rust-validated. Files are on this website — clicking starts download immediately.</p>
 
                 <div style={{ display: 'grid', gap: 10, marginTop: 14 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', padding: '14px 16px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 12 }}>
                     <div>
-                      <div style={{ fontWeight: 700, fontSize: 13 }}>DOTX_0.1.0_x64_en-US.msi</div>
-                      <div style={{ fontSize: 11, color: 'var(--text-tertiary)', fontFamily: 'var(--font-mono)' }}>2.8 MB • MSI • Recommended • SHA256: F80BA3AA...</div>
+                      <div style={{ fontWeight: 700, fontSize: 13 }}>DOTX_0.2.0_x64_en-US.msi</div>
+                      <div style={{ fontSize: 11, color: 'var(--text-tertiary)', fontFamily: 'var(--font-mono)' }}>3.0 MB • MSI • Recommended • SHA256: 4DC818B5…</div>
+                      <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>Isolated WebView2 multiwebview + dialog plugin • Build 40649156897</div>
                     </div>
                     <button
                       className="btn btn-primary"
-                      onClick={() => handleDirectDownload(msiUrl, 'DOTX_0.1.0_x64_en-US.msi')}
+                      onClick={() => handleDirectDownload(msi020Url, 'DOTX_0.2.0_x64_en-US.msi')}
                       style={{ whiteSpace: 'nowrap' }}
                     >
                       Download MSI ↓
@@ -102,12 +105,12 @@ export function Download() {
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', padding: '14px 16px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 12 }}>
                     <div>
-                      <div style={{ fontWeight: 700, fontSize: 13 }}>DOTX_0.1.0_x64-setup.exe</div>
-                      <div style={{ fontSize: 11, color: 'var(--text-tertiary)', fontFamily: 'var(--font-mono)' }}>1.9 MB • NSIS Setup • SHA256: F7DF90EE...</div>
+                      <div style={{ fontWeight: 700, fontSize: 13 }}>DOTX_0.2.0_x64-setup.exe</div>
+                      <div style={{ fontSize: 11, color: 'var(--text-tertiary)', fontFamily: 'var(--font-mono)' }}>2.0 MB • NSIS Setup • SHA256: CC5B84A8…</div>
                     </div>
                     <button
                       className="btn btn-secondary"
-                      onClick={() => handleDirectDownload(exeUrl, 'DOTX_0.1.0_x64-setup.exe')}
+                      onClick={() => handleDirectDownload(exe020Url, 'DOTX_0.2.0_x64-setup.exe')}
                       style={{ whiteSpace: 'nowrap' }}
                     >
                       Download EXE ↓
@@ -117,6 +120,20 @@ export function Download() {
                   <a href={checksumsUrl} download="checksums-SHA256.txt" style={{ fontSize: 12, color: 'var(--violet)', textDecoration: 'underline', textAlign: 'center' }}>
                     Verify → checksums-SHA256.txt (download)
                   </a>
+
+                  <details style={{ marginTop: 4, background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: 8, padding: '8px 12px' }}>
+                    <summary style={{ cursor: 'pointer', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>Previous version (v0.1.0) — still available</summary>
+                    <div style={{ display: 'grid', gap: 8, marginTop: 10 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', padding: '10px 12px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 8 }}>
+                        <span style={{ fontSize: 12, fontFamily: 'var(--font-mono)' }}>DOTX_0.1.0_x64_en-US.msi — 2.8 MB</span>
+                        <button className="btn btn-ghost" onClick={() => handleDirectDownload(msi010Url, 'DOTX_0.1.0_x64_en-US.msi')} style={{ fontSize: 12, padding: '6px 10px' }}>Download</button>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', padding: '10px 12px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 8 }}>
+                        <span style={{ fontSize: 12, fontFamily: 'var(--font-mono)' }}>DOTX_0.1.0_x64-setup.exe — 1.9 MB</span>
+                        <button className="btn btn-ghost" onClick={() => handleDirectDownload(exe010Url, 'DOTX_0.1.0_x64-setup.exe')} style={{ fontSize: 12, padding: '6px 10px' }}>Download</button>
+                      </div>
+                    </div>
+                  </details>
                 </div>
               </div>
 
@@ -139,7 +156,7 @@ export function Download() {
                 )}
                 {checked && !hasRelease && (
                   <p style={{ fontSize: 12, color: 'var(--text-tertiary)', background: 'var(--bg-elevated)', border: '1px solid var(--border)', padding: '10px 12px', borderRadius: 8 }}>
-                    No published GitHub Release yet — direct downloads above are from this website&apos;s verified CI build. GitHub Releases will appear after <code>v0.1.0</code> tag.
+                    No published GitHub Release yet — direct downloads above are from this website&apos;s verified CI build (v0.2.0). GitHub Releases will appear after tag.
                   </p>
                 )}
               </div>
@@ -164,7 +181,7 @@ export function Download() {
                 <li>Click <strong style={{ color: 'var(--text-primary)' }}>Download MSI</strong> above — file saves directly from this website.</li>
                 <li>Run the installer and follow Windows prompts.</li>
                 <li>If WebView2 missing, bootstrapper installs Evergreen Runtime.</li>
-                <li>Launch DOTX from Start Menu.</li>
+                <li>Launch DOTX from Start Menu — v0.2.0 shows isolated WebView2 surfaces per tab.</li>
               </ol>
               <div style={{ marginTop: 12, fontFamily: 'var(--font-mono)', fontSize: 11, background: 'var(--bg-elevated)', border: '1px solid var(--border)', padding: 12, borderRadius: 8, color: 'var(--text-tertiary)' }}>
                 # Verify checksum (PowerShell) — compare with{' '}
@@ -172,7 +189,10 @@ export function Download() {
                   checksums-SHA256.txt
                 </a>
                 <br />
-                Get-FileHash .\DOTX_0.1.0_x64_en-US.msi -Algorithm SHA256
+                Get-FileHash .\DOTX_0.2.0_x64_en-US.msi -Algorithm SHA256
+              </div>
+              <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text-tertiary)' }}>
+                <strong>What&apos;s new in v0.2.0:</strong> Real WebView2 per-tab rendering (multiwebview), Rust-validated navigation (blocks javascript:/data:/file:), per-tab isolated surfaces (white-flash known issue #10011), least-privilege capabilities.
               </div>
             </div>
           </div>
@@ -201,8 +221,9 @@ export function Download() {
             <div className="privacy-card">
               <h4 style={{ marginBottom: 8 }}>Versioning</h4>
               <p style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                Current: <code style={{ fontFamily: 'var(--font-mono)', background: 'var(--bg-elevated)', padding: '2px 6px', borderRadius: 4 }}>v0.1.0</code> ({SITE.latestVersion}). MSI 2.8 MB / EXE 1.9 MB hosted here. Future releases also appear here + GitHub.
+                Current: <code style={{ fontFamily: 'var(--font-mono)', background: 'var(--bg-elevated)', padding: '2px 6px', borderRadius: 4 }}>v0.2.0</code> ({SITE.latestVersion} · 2026-10-28) — MSI 3.0 MB / EXE 2.0 MB hosted here. v0.1.0 still available. Future releases also appear here + GitHub.
               </p>
+              <p style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 6 }}>Builds: <a href="https://github.com/dotsoftwarelkofficial/dotx/actions/runs/40649156897" target="_blank" rel="noreferrer" style={{ color: 'var(--violet)', textDecoration: 'underline' }}>40649156897 (v0.2.0)</a> · <a href="https://github.com/dotsoftwarelkofficial/dotx/actions/runs/40639918198" target="_blank" rel="noreferrer" style={{ color: 'var(--violet)', textDecoration: 'underline' }}>40639918198 (v0.1.0)</a></p>
             </div>
           </div>
         </div>

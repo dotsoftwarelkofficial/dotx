@@ -79,8 +79,8 @@ export function Header() {
           <button
             onClick={() => {
               const a = document.createElement('a');
-              a.href = `${import.meta.env.BASE_URL}downloads/DOTX_0.1.0_x64_en-US.msi`;
-              a.download = 'DOTX_0.1.0_x64_en-US.msi';
+              a.href = `${import.meta.env.BASE_URL}downloads/DOTX_0.2.0_x64_en-US.msi`;
+              a.download = 'DOTX_0.2.0_x64_en-US.msi';
               document.body.appendChild(a);
               a.click();
               a.remove();
@@ -138,8 +138,8 @@ export function Header() {
             <button
               onClick={() => {
                 const a = document.createElement('a');
-                a.href = `${import.meta.env.BASE_URL}downloads/DOTX_0.1.0_x64_en-US.msi`;
-                a.download = 'DOTX_0.1.0_x64_en-US.msi';
+                a.href = `${import.meta.env.BASE_URL}downloads/DOTX_0.2.0_x64_en-US.msi`;
+                a.download = 'DOTX_0.2.0_x64_en-US.msi';
                 document.body.appendChild(a);
                 a.click();
                 a.remove();
@@ -149,7 +149,7 @@ export function Header() {
             >
               Download for Windows ↓
             </button>
-            <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-tertiary)' }}>Preview build • 2.8 MB MSI • Direct from this site</div>
+            <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-tertiary)' }}>Preview build • 3.0 MB MSI • Direct from this site</div>
           </div>
         </div>
       </div>

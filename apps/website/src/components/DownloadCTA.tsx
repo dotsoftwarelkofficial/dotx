@@ -32,8 +32,8 @@ export default function DownloadCTA() {
               <button
                 onClick={() => {
                   const a = document.createElement('a');
-                  a.href = `${import.meta.env.BASE_URL}downloads/DOTX_0.1.0_x64_en-US.msi`;
-                  a.download = 'DOTX_0.1.0_x64_en-US.msi';
+                  a.href = `${import.meta.env.BASE_URL}downloads/DOTX_0.2.0_x64_en-US.msi`;
+                  a.download = 'DOTX_0.2.0_x64_en-US.msi';
                   document.body.appendChild(a);
                   a.click();
                   a.remove();
@@ -47,7 +47,7 @@ export default function DownloadCTA() {
               </Link>
             </div>
             <div style={{ marginTop: 14, fontSize: 12, color: 'var(--text-tertiary)' }}>
-              Requires Windows 10/11 x64 • MSI 2.9 MB • Free while in preview
+              Requires Windows 10/11 x64 • MSI 3.0 MB • Free while in preview
             </div>
           </div>
         </div>

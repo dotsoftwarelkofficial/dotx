@@ -23,14 +23,14 @@ export default function Hero() {
             <button
               onClick={() => {
                 const a = document.createElement('a');
-                a.href = `${import.meta.env.BASE_URL}downloads/DOTX_0.1.0_x64_en-US.msi`;
-                a.download = 'DOTX_0.1.0_x64_en-US.msi';
+                a.href = `${import.meta.env.BASE_URL}downloads/DOTX_0.2.0_x64_en-US.msi`;
+                a.download = 'DOTX_0.2.0_x64_en-US.msi';
                 document.body.appendChild(a);
                 a.click();
                 a.remove();
               }}
               className="btn btn-primary btn-large"
-              title="Download directly — 2.8 MB MSI from this site"
+              title="Download directly — 3.0 MB MSI from this site"
             >
               Download for Windows <span aria-hidden>↓</span>
             </button>
@@ -46,7 +46,7 @@ export default function Hero() {
               Windows 10 & 11 • x64
             </span>
             <span style={{ width: 1, height: 12, background: 'var(--border)', display: 'inline-block' }} aria-hidden />
-            <span>v0.1.0 preview • MSI 2.9 MB</span>
+            <span>v0.2.0 real browser • MSI 3.0 MB</span>
             <span style={{ width: 1, height: 12, background: 'var(--border)', display: 'inline-block' }} aria-hidden />
             <span>Free while in preview</span>
           </div>
