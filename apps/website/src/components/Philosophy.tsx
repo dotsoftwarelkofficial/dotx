@@ -1,4 +1,5 @@
 export default function Philosophy() {
+  const base = import.meta.env.BASE_URL;
   return (
     <section className="section" style={{ background: 'var(--bg-elevated)' }}>
       <div className="container">
@@ -12,25 +13,19 @@ export default function Philosophy() {
 
         <div className="philosophy-grid">
           <div className="philosophy-card">
-            <div className="philosophy-icon" aria-hidden>◐</div>
+            <img src={`${base}images/philosophy-calm.png`} alt="" aria-hidden width={80} height={80} style={{ width: 56, height: 56, borderRadius: 14, border: '1px solid var(--border)', background: 'var(--bg-card)', objectFit: 'cover', margin: '0 auto 16px', display: 'block' }} loading="lazy" />
             <h3>Calm by default</h3>
-            <p>
-              No banners, no pop-ups, no feed. A quiet toolbar, a command palette that appears only when you call it, and workspaces that hide what you don&apos;t need right now.
-            </p>
+            <p>No banners, no pop-ups, no feed. A quiet toolbar, a command palette that appears only when you call it, and workspaces that hide what you don&apos;t need right now.</p>
           </div>
           <div className="philosophy-card">
-            <div className="philosophy-icon" aria-hidden>⚡︎</div>
+            <img src={`${base}images/philosophy-speed.png`} alt="" aria-hidden width={80} height={80} style={{ width: 56, height: 56, borderRadius: 14, border: '1px solid var(--border)', background: 'var(--bg-card)', objectFit: 'cover', margin: '0 auto 16px', display: 'block' }} loading="lazy" />
             <h3>Crafted for speed</h3>
-            <p>
-              Native Tauri shell with a React frontend — no Electron bloat. Fast launch, instant search, and gestures that feel like the OS itself.
-            </p>
+            <p>Native Tauri shell with a React frontend — no Electron bloat. Fast launch, instant search, and gestures that feel like the OS itself.</p>
           </div>
           <div className="philosophy-card">
-            <div className="philosophy-icon" aria-hidden>⬢</div>
+            <img src={`${base}images/philosophy-privacy.png`} alt="" aria-hidden width={80} height={80} style={{ width: 56, height: 56, borderRadius: 14, border: '1px solid var(--border)', background: 'var(--bg-card)', objectFit: 'cover', margin: '0 auto 16px', display: 'block' }} loading="lazy" />
             <h3>Private by design</h3>
-            <p>
-              No telemetry toggle hidden three menus deep. DOTX ships with no analytics, no account wall, and clear, auditable storage you control.
-            </p>
+            <p>No telemetry toggle hidden three menus deep. DOTX ships with no analytics, no account wall, and clear, auditable storage you control.</p>
           </div>
         </div>
       </div>
