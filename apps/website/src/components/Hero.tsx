@@ -20,14 +20,25 @@ export default function Hero() {
           </p>
 
           <div className="hero-actions">
-            <Link to="/download" className="btn btn-primary btn-large">
-              Download for Windows
-              <span aria-hidden>→</span>
-            </Link>
+            <button
+              onClick={() => {
+                const a = document.createElement('a');
+                a.href = `${import.meta.env.BASE_URL}downloads/DOTX_0.1.0_x64_en-US.msi`;
+                a.download = 'DOTX_0.1.0_x64_en-US.msi';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+              }}
+              className="btn btn-primary btn-large"
+              title="Download directly — 2.8 MB MSI from this site"
+            >
+              Download for Windows <span aria-hidden>↓</span>
+            </button>
             <Link to="/features" className="btn btn-secondary btn-large">
               See what&apos;s inside
             </Link>
           </div>
+          <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 8 }}>Direct download from this site — no GitHub redirect</div>
 
           <div className="hero-meta">
             <span>

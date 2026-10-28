@@ -76,14 +76,22 @@ export function Header() {
           >
             <span aria-hidden style={{ fontSize: 14 }}>{theme === 'dark' ? '☀︎' : '☾'}</span>
           </button>
-          <Link
-            to="/download"
+          <button
+            onClick={() => {
+              const a = document.createElement('a');
+              a.href = `${import.meta.env.BASE_URL}downloads/DOTX_0.1.0_x64_en-US.msi`;
+              a.download = 'DOTX_0.1.0_x64_en-US.msi';
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+            }}
             className="btn btn-primary"
             style={{ padding: '9px 14px', fontSize: 13 }}
+            title="Download directly from this site — no GitHub redirect"
           >
             Download
-            <span aria-hidden style={{ fontSize: 12 }}>→</span>
-          </Link>
+            <span aria-hidden style={{ fontSize: 12 }}>↓</span>
+          </button>
           <button
             className="mobile-toggle"
             onClick={() => setOpen((v) => !v)}
@@ -127,12 +135,21 @@ export function Header() {
           <Link to="/about">About</Link>
           <Link to="/privacy">Privacy</Link>
           <div style={{ marginTop: 16, display: 'grid', gap: 8 }}>
-            <Link to="/download" className="btn btn-primary" style={{ justifyContent: 'center' }}>
-              Download for Windows
-            </Link>
-            <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-tertiary)' }}>
-              Preview build • 2.9 MB MSI • Windows 10/11
-            </div>
+            <button
+              onClick={() => {
+                const a = document.createElement('a');
+                a.href = `${import.meta.env.BASE_URL}downloads/DOTX_0.1.0_x64_en-US.msi`;
+                a.download = 'DOTX_0.1.0_x64_en-US.msi';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+              }}
+              className="btn btn-primary"
+              style={{ justifyContent: 'center', width: '100%' }}
+            >
+              Download for Windows ↓
+            </button>
+            <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-tertiary)' }}>Preview build • 2.8 MB MSI • Direct from this site</div>
           </div>
         </div>
       </div>

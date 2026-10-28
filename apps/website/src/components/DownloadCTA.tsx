@@ -29,10 +29,19 @@ export default function DownloadCTA() {
             <h2>Take back your web.</h2>
             <p>Join the preview. No account, no tracker — just a better browser for Windows.</p>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Link to="/download" className="btn btn-primary btn-large">
-                Download for Windows
-                <span aria-hidden>→</span>
-              </Link>
+              <button
+                onClick={() => {
+                  const a = document.createElement('a');
+                  a.href = `${import.meta.env.BASE_URL}downloads/DOTX_0.1.0_x64_en-US.msi`;
+                  a.download = 'DOTX_0.1.0_x64_en-US.msi';
+                  document.body.appendChild(a);
+                  a.click();
+                  a.remove();
+                }}
+                className="btn btn-primary btn-large"
+              >
+                Download for Windows ↓
+              </button>
               <Link to="/changelog" className="btn btn-secondary btn-large">
                 Read the changelog
               </Link>
