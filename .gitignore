@@ -1,0 +1,53 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Build
+dist
+build
+out
+.next
+.output
+.turbo
+.vite
+
+# Rust / Tauri
+target
+src-tauri/target
+Cargo.lock
+*.pdb
+*.msi
+*.exe
+
+# Env
+.env
+.env.local
+.env.*.local
+.env.production
+
+# OS
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+
+# Editor
+.vscode
+.idea
+*.suo
+*.user
+*.swp
+
+# Cache
+.cache
+.parcel-cache
+.eslintcache
+.npm
+apps/website/dist
+*.tsbuildinfo
+vite.config.*.ts
+# Vite generated
+*.tsbuildinfo
+vite.config.d.ts
+vite.config.js

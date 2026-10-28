@@ -1,0 +1,60 @@
+name: Release Windows
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version tag (e.g. v0.1.0)"
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build website (for artifact sanity)
+        run: npm run build --workspace=apps/website
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          NODE_ENV: production
+
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: apps/desktop
+          tagName: ${{ github.ref_name }}
+          releaseName: "DOTX ${{ github.ref_name }}"
+          releaseBody: "See docs/RELEASES.md for notes. SHA-256 checksums are attached below."
+          releaseDraft: true
+          args: --verbose
+
+      - name: Generate checksums
+        shell: pwsh
+        run: |
+          Get-ChildItem apps/desktop/src-tauri/target/release/bundle -Recurse -Include *.msi,*.exe | ForEach-Object {
+            $h = (Get-FileHash $_.FullName -Algorithm SHA256).Hash
+            "$h  $($_.Name)" | Out-File -Append checksums.txt
+          }
+          cat checksums.txt

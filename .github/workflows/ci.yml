@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  website:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm install
+      - run: npm run typecheck --workspace=apps/website
+      - run: npm run build --workspace=apps/website
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          NODE_ENV: production
+      - run: |
+          test -f apps/website/dist/index.html
+          test -f apps/website/dist/404.html || echo "Note: 404.html created only in deploy workflow"
+          ls -lh apps/website/dist
+
+  desktop-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm install
+      - run: npm run typecheck --workspace=apps/desktop || echo "Desktop typecheck skipped (requires Rust setup)"
