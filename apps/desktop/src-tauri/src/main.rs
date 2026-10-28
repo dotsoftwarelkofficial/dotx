@@ -304,7 +304,8 @@ mod tests {
     fn test_validate_download_request_bad_filename() {
         let r = validate_download_request("https://example.com/a.pdf".into(), "../evil.exe".into());
         assert!(!r.ok);
-        assert!(r.reason.unwrap().contains("traversal") || r.reason.unwrap().contains("path"));
+        let reason = r.reason.unwrap();
+        assert!(reason.contains("traversal") || reason.contains("path"));
         let r2 = validate_download_request("https://example.com/a.pdf".into(), "".into());
         assert!(!r2.ok);
     }
