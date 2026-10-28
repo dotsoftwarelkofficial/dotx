@@ -185,7 +185,13 @@ fn validate_download_request(url: String, filename: String) -> ValidateResult {
     if !u.ok {
         return u;
     }
-    let p = validate_download_path(filename.clone(), "/tmp".into());
+    // Use platform-appropriate absolute dir for validation (Windows requires drive letter)
+    let fake_dir = if cfg!(windows) {
+        "C:\\Users\\Test\\Downloads".to_string()
+    } else {
+        "/tmp".to_string()
+    };
+    let p = validate_download_path(filename.clone(), fake_dir);
     if !p.ok {
         return ValidateResult { ok: false, normalized: None, reason: p.reason };
     }
