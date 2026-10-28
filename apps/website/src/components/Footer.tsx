@@ -1,45 +1,66 @@
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
-export function Footer() {
+export default function Footer() {
+  const year = new Date().getFullYear();
   return (
     <footer className="footer">
       <div className="container">
         <div className="footer-grid">
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <span style={{ width: 28, height: 28, borderRadius: 9, background: "linear-gradient(135deg,#7C5CFF,#2EE6E6)", display: "grid", placeItems: "center", color: "white", fontWeight: 800, fontSize: 12 }}>◈</span>
-              <strong>DOTX</strong>
-            </div>
-            <p className="muted small" style={{ marginTop: 10, maxWidth: 360 }}>
-              Premium Windows browser built with Tauri + Rust + WebView2. Fast, private, and designed for Windows 10/11.
-              Website hosted on GitHub Pages. Installers distributed via GitHub Releases.
+          <div className="footer-brand">
+            <Link to="/" className="brand" style={{ marginBottom: 0 }}>
+              <span className="brand-mark" aria-hidden>
+                ◈
+              </span>
+              <span className="brand-wordmark">
+                <strong>DOTX</strong>
+                <span>for Windows</span>
+              </span>
+            </Link>
+            <p>
+              A premium, keyboard-first browser for Windows — calm by default, crafted for flow, and private by design. Built by DOT Software.
             </p>
+            <div style={{ marginTop: 12, fontSize: 12, color: 'var(--text-tertiary)' }}>
+              <div>v0.1.0 preview • Not yet stable</div>
+              <div style={{ marginTop: 4 }}>
+                <a href="https://github.com/dotsoftwarelkofficial/dotx" style={{ display: 'inline', color: 'var(--violet)', padding: 0 }}>GitHub →</a>
+              </div>
+            </div>
           </div>
+
           <div>
             <h4>Product</h4>
             <Link to="/features">Features</Link>
             <Link to="/download">Download</Link>
-            <Link to="/releases">Release Notes</Link>
-            <Link to="/security">Security</Link>
-          </div>
-          <div>
-            <h4>Resources</h4>
-            <a href="https://github.com/" target="_blank" rel="noreferrer">GitHub Repository</a>
-            <a href="https://v2.tauri.app/" target="_blank" rel="noreferrer">Tauri Docs</a>
-            <a href="https://learn.microsoft.com/en-us/microsoft-edge/webview2/" target="_blank" rel="noreferrer">WebView2</a>
-            <Link to="/privacy">Privacy Policy</Link>
-          </div>
-          <div>
-            <h4>Support</h4>
-            <Link to="/support">Help & Support</Link>
+            <Link to="/changelog">Changelog</Link>
             <Link to="/faq">FAQ</Link>
-            <a href="#contact">Contact</a>
-            <span className="muted small">Windows 10/11 · WebView2 Runtime required</span>
+          </div>
+
+          <div>
+            <h4>Company</h4>
+            <Link to="/about">About</Link>
+            <a href="https://github.com/dotsoftwarelkofficial/dotx/discussions" target="_blank" rel="noreferrer">
+              Discussions
+            </a>
+            <a href="https://github.com/dotsoftwarelkofficial/dotx/issues" target="_blank" rel="noreferrer">
+              Report an issue
+            </a>
+          </div>
+
+          <div>
+            <h4>Legal</h4>
+            <Link to="/privacy">Privacy</Link>
+            <Link to="/security">Security</Link>
+            <Link to="/support">Support</Link>
           </div>
         </div>
+
         <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} DOTX. Independent project — not affiliated with Microsoft, Google, or Opera.</span>
-          <span className="muted">Build: Vite + React · Deployed via GitHub Pages</span>
+          <span>© {year} DOT Software. All rights reserved.</span>
+          <span style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+            <span>Built with Tauri + React</span>
+            <span aria-hidden>·</span>
+            <a href="https://dotsoftwarelkofficial.github.io/dotx/" style={{ padding: 0, fontSize: 12 }}>dotx.app</a>
+          </span>
         </div>
       </div>
     </footer>
